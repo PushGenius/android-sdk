@@ -22,17 +22,21 @@ object BigBrain {
 object PushGenius {
     internal var appId: String = ""
     internal var host: String = "https://api.pushgeni.us"
+    internal var hostSet = false
     @JvmField val User = UserNamespace()
     @JvmField val Notifications = NotificationsNamespace()
 
     @JvmStatic
     fun setHost(url: String) {
         host = url.trimEnd('/')
+        hostSet = true
     }
 
     @JvmStatic
     fun initialize(appId: String) {
         this.appId = appId
+        Client.setApp(appId)
+        Client.saveHost(if (hostSet) host else null)
         TokenStore.start()
         Client.register()
     }

@@ -22,14 +22,14 @@ class PushSubscription {
 
 class NotificationsNamespace {
     fun requestPermission(fallbackToSettings: Boolean = true, callback: ((Boolean) -> Unit)? = null) {
-        TokenStore.requestPermission { granted ->
+        TokenStore.requestPermission(fallbackToSettings) { granted ->
             Client.setPermission(granted)
             callback?.invoke(granted)
         }
     }
 
     fun addClickListener(listener: (NotificationClickEvent) -> Unit) {
-        Client.clickListeners.add(listener)
+        Client.addClickListener(listener)
     }
 }
 
