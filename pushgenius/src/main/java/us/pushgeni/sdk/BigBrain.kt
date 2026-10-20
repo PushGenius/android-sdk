@@ -1,6 +1,6 @@
 package us.pushgeni.sdk
 
-object OneSignal {
+object BigBrain {
     @JvmStatic
     val User: UserNamespace get() = PushGenius.User
     @JvmStatic

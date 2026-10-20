@@ -10,7 +10,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.Executors
 
 internal object Client {
-    @Volatile var onesignalId: String? = null
+    @Volatile var bigBrainId: String? = null
     @Volatile var externalId: String? = null
     @Volatile var subscriptionId: String? = null
     @Volatile var optedIn: Boolean = true
@@ -33,7 +33,7 @@ internal object Client {
             }
             val identity = JSONObject()
             externalId?.let { identity.put("external_id", it) }
-            onesignalId?.let { identity.put("onesignal_id", it) }
+            bigBrainId?.let { identity.put("pushgenius_id", it) }
             val body = JSONObject()
                 .put("identity", identity)
                 .put("subscriptions", subs)
@@ -52,17 +52,17 @@ internal object Client {
 
     fun logout() {
         externalId = null
-        onesignalId = null
+        bigBrainId = null
         register()
     }
 
     fun patch(properties: Map<String, Any>? = null, identity: Map<String, String>? = null) {
         io.execute {
-            val id = onesignalId ?: return@execute register()
+            val id = bigBrainId ?: return@execute register()
             val body = JSONObject()
             properties?.let { body.put("properties", JSONObject(it)) }
             identity?.let { body.put("identity", JSONObject(it)) }
-            apply(request("PATCH", "/sdk/apps/${PushGenius.appId}/users/by/onesignal_id/$id", body))
+            apply(request("PATCH", "/sdk/apps/${PushGenius.appId}/users/by/legacy_id/$id", body))
         }
     }
 
@@ -102,7 +102,7 @@ internal object Client {
     private fun apply(json: JSONObject?) {
         json ?: return
         json.optJSONObject("identity")?.let {
-            onesignalId = it.optString("onesignal_id", onesignalId ?: "")
+            bigBrainId = it.optString("pushgenius_id", bigBrainId ?: "")
             if (it.has("external_id")) externalId = it.optString("external_id")
         }
         json.optJSONArray("subscriptions")?.optJSONObject(0)?.let {

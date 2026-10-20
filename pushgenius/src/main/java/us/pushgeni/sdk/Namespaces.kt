@@ -8,7 +8,7 @@ class UserNamespace {
     fun removeTag(key: String) = removeTags(listOf(key))
     fun removeTags(keys: List<String>) = addTags(keys.associateWith { "" })
     fun addAlias(label: String, id: String) = Client.patch(identity = mapOf(label to id))
-    val onesignalId: String? get() = Client.onesignalId
+    val bigBrainId: String? get() = Client.bigBrainId
     val externalId: String? get() = Client.externalId
 }
 
