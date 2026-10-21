@@ -25,8 +25,8 @@ dependencies {
     implementation("org.json:json:20240303")
 }
 
-// JitPack builds a git tag and passes it as -Pversion; local builds fall back to 0.1.0.
-val sdkVersion = (findProperty("version") as String?)?.takeIf { it != "unspecified" } ?: "0.1.0"
+// JitPack builds a git tag and passes it as -Pversion; local builds fall back to 0.2.0.
+val sdkVersion = (findProperty("version") as String?)?.takeIf { it != "unspecified" } ?: "0.2.0"
 
 publishing {
     publications {
