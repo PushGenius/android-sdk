@@ -22,4 +22,4 @@ Releases are git tags (`git tag 0.2.0 && git push origin 0.2.0`); JitPack builds
 
 Build locally with `./gradlew :pushgenius:assembleRelease`.
 
-Sample: `sample/`.
+Sample app for testing on a phone: [`sample/`](sample/README.md).

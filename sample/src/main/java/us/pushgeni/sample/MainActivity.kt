@@ -6,18 +6,23 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import us.pushgeni.sdk.BigBrain
-import us.pushgeni.sdk.PushGenius
+import us.pushgeni.sdk.NotificationClickEvent
 
 class MainActivity : Activity() {
+    private lateinit var status: TextView
+    private lateinit var ids: TextView
+    private lateinit var click: TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        PushGenius.setHost("http://192.168.1.10:3001")
-        BigBrain.initialize("YOUR_APP_ID")
-
-        val status = TextView(this).apply { text = "PushGenius sample" }
+        status = TextView(this).apply {
+            text = if (BuildConfig.PUSHGENIUS_APP_ID.isEmpty()) "Set pushgenius.appId in local.properties" else "PushGenius sample"
+        }
+        ids = TextView(this).apply { setTextIsSelectable(true) }
+        click = TextView(this).apply { setTextIsSelectable(true) }
         val layout = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(48, 48, 48, 48)
+            setPadding(48, 96, 48, 48)
             addView(status)
             addView(Button(this@MainActivity).apply {
                 text = "Request permission"
@@ -35,7 +40,39 @@ class MainActivity : Activity() {
                 text = "Tag plan=pro"
                 setOnClickListener { BigBrain.User.addTag("plan", "pro") }
             })
+            addView(Button(this@MainActivity).apply {
+                text = "Refresh IDs"
+                setOnClickListener { showIds() }
+            })
+            addView(ids)
+            addView(click)
         }
         setContentView(layout)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        showIds()
+        SampleApp.lastClick?.let(::showClick)
+        SampleApp.onClick = { runOnUiThread { showClick(it) } }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        SampleApp.onClick = null
+    }
+
+    private fun showIds() {
+        ids.text = """
+            |
+            |External ID: ${BigBrain.User.externalId ?: "-"}
+            |Subscription: ${BigBrain.User.pushSubscription.id ?: "-"}
+            |Opted in: ${BigBrain.User.pushSubscription.optedIn}
+            |Token: ${BigBrain.User.pushSubscription.token?.take(16)?.plus("…") ?: "-"}
+        """.trimMargin()
+    }
+
+    private fun showClick(event: NotificationClickEvent) {
+        click.text = "\nLast tap: ${event.notificationId}\nData: ${event.additionalData}"
     }
 }
